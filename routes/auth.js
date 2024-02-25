@@ -2,6 +2,7 @@ const express = require('express');
 const Users = require('../models/Users')
 const router = express.Router();
 const bcrypt = require('bcryptjs');
+const fetchuser = require('../middleware/fetchuser')
 const jwt = require('jsonwebtoken');
 
 const { body, validationResult } = require('express-validator');
@@ -82,6 +83,20 @@ router.post('/login', [
   } catch (error) {
     console.error(error.message);
     res.status(500).send("Server Error");
+  }
+});
+
+//get loggedin user details
+
+router.post('/getuser', fetchuser, async (req, res)=> {
+  try {
+    userId = req.user.id;
+    const user = await Users.findById(userId).select("-password")
+    res.send(user)
+    
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).send("Server Error");  
   }
 })
 
