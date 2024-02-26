@@ -37,25 +37,47 @@ router.get('/fetchcomplaints', fetchuser, async (req, res) => {
   }
 });
 
+// route to update complain
+
 router.put('/updatecomplain/:id', fetchuser, async (req, res) => {
   try {
     const { title, description, category, status } = req.body;
     const newComplain = {};
-    if(title){newComplain.title = title};
-    if(description){newComplain.description = description};
-    if(category){newComplain.category = category};
-    if(status){newComplain.status = status};
+    if (title) { newComplain.title = title };
+    if (description) { newComplain.description = description };
+    if (category) { newComplain.category = category };
+    if (status) { newComplain.status = status };
 
     let complain = await Complaint.findById(req.params.id);
-    
-    if(!complain){return res.status(404).send("Not Complain Found")}
 
-    if(complain.user.toString() !== req.user.id){
+    if (!complain) { return res.status(404).send("Not Complain Found") }
+
+    if (complain.user.toString() !== req.user.id) {
       return res.status(401).send("Not Allowed")
     }
 
-    complain = await Complaint.findByIdAndUpdate(req.params.id, {$set: newComplain}, {new: true})
-    res.json({complain});
+    complain = await Complaint.findByIdAndUpdate(req.params.id, { $set: newComplain }, { new: true })
+    res.json({ complain });
+  } catch (err) {
+    console.log(err.message)
+    res.status(500).send(err.message);
+  }
+});
+
+router.delete('/deletecomplain/:id', fetchuser, async (req, res) => {
+  try {
+    const { title, description, category, status } = req.body;
+
+    let complain = await Complaint.findById(req.params.id);
+
+    if (!complain) { return res.status(404).send("Not Complain Found") }
+
+    if (complain.user.toString() !== req.user.id) {
+      return res.status(401).send("Not Allowed")
+    }
+
+    complain_delete = await Complaint.findByIdAndDelete(req.params.id)
+    res.json({ "Success": "Complain deleted successfully" });
   } catch (err) {
     console.log(err.message)
     res.status(500).send(err.message);
