@@ -1,7 +1,12 @@
 const mongoose = require('mongoose');
+const {Schema} = mongoose;
 
 // Define Complaint Schema
 const complaintSchema = new mongoose.Schema({
+  user:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'user'
+  },
   title: {
     type: String,
     required: true
